@@ -1,0 +1,92 @@
+{% extends 'github/navBar.html' %}
+
+{% block content %}
+
+  <div class="mx-auto" style="width: 50%;">
+    <form method="GET" role="form" data-toggle="validator">
+
+      <div class="form-group">
+        <br/>
+        <label >Enter the search</label>
+        <div class="help-block with-errors"></div>
+        <input type="text" name="search_term" class="form-control" placeholder="Enter your search here" required>
+      </div>
+      <br/>
+      <div class = "form-group">
+        <label >Filter by:</label>&nbsp
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="title" value="in:title">
+            <label class="form-check-label" for="inlineTitle">Title</label>
+          </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="body" value="in:body">
+            <label class="form-check-label" for="inlineBody">Body</label>
+        </div>
+        <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" name="comment" value="in:comment">
+            <label class="form-check-label" for="inlineComment">Comment</label>
+        </div>
+      </div>
+      <button class="btn btn-default"  type="submit">
+        <span>Search</span>
+      </button>
+    </div>
+    </form>
+  </div>
+<br>
+
+{% if issues %}
+    <div class="alert alert-primary" role="alert">
+        <span>Search results for "{{search_term}}"</span>
+        <span class="float-right">{{length}} result(s) fetched</span>
+    </div> 
+    <ul class="list-group">
+        {% for item in issues %}
+            <li class="list-group-item">
+                <img src={{item.user.avatar_url}} height="60px" width="60px" /><br/><br/>
+                <b>Title :</b> {{item.title}} <br/>
+                <b>Score Count :</b> {{item.score}} <br/>
+                <b>Issues State :</b> {{item.state}} <br/>
+                {% if item.body %}
+                    <b>Description :</b> {{item.body}} <br/>
+                {% endif %}
+                <a href={{item.html_url}} class="float-right btn btn-primary">Go to GitHub link</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if issues.has_other_pages %}
+        <nav aria-label="Issue Page Navigation">
+		    <ul class ='pagination flex-wrap' style="margin-right:100px ">
+			    {% if issues.has_previous %}
+				    <li class="page-item">
+					    <a class="page-link" href="?search_term={{search_term}}{{filterBy}}&page=={{ issues.previous_page_number }}" aria-label="Previous">
+						    <span>Previous</span>
+						</a>
+					</li>
+				{% endif %}
+				{% for i in issues.paginator.page_range %}
+				    {% if issues.number == i %}
+					    <li class="page-item active">
+						    <a class="page-link" href="#">{{ i }} <span class="sr-only">(current)</span></a>
+						</li>
+					{% else %}
+						<li class="page-item" ><a class="page-link" href="?search_term={{search_term}}{{filterBy}}&page={{ i }}">{{ i }}</a></li>
+					{% endif %}
+				{% endfor %}
+				{% if issues.has_next %}
+				    <li class="page-item">
+				        <a class="page-link" href="?search_term={{search_term}}{{filterBy}}&page={{ issues.next_page_number }}" aria-label="Next">
+						    <span>Next</span>
+						</a>
+					</li>
+				{% endif %}
+			</ul>
+		</nav>
+    {% endif %}
+{% endif %} 
+
+{% endblock %}
+
+
+
