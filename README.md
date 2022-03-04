@@ -36,6 +36,8 @@ python manage.py migrate
 python manage.py runserver
 ```
 
+Server runs at: 127.0.0.1:8000/
+
 6. To execute the tests , please run the following from the directory containing the tests.py file:
 
 ```
