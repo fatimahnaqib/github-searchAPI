@@ -38,8 +38,8 @@ python manage.py runserver
 
 Server runs at: 127.0.0.1:8000/
 
-6. To execute the tests , please run the following from the directory containing the tests.py file:
+6. To execute the tests , please run the following from the directory containing the manage.py file:
 
 ```
-pytest tests.py
+python manage.py test
 ```
