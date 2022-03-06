@@ -1,28 +1,171 @@
-import requests
-import unittest
+from django.test import TestCase
+from .helper import get_single_filtered_response, get_response_by_two_filter, get_response_by_three_filter, parse_response,get_exception
+import mock
 
-class TestSearchIssuesApi(unittest.TestCase):
+
+class TestSearchIssuesApi(TestCase):
+
     def setUp(self):
-        self.__api_base_url = "https://api.github.com"
-        self.__header = {"Authorization": "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"}
-        self.q = 'broken'
-        self.search_issues = '/search/issues'
-        self.filter_title = '&title=in%3Atitle'
-        self.filter_body = '&body=in%3Abody'
-        self.filter_comment = '&comment=in%3Acomment'
-        
-    def test_search_issues_by_title(self):
-        response = requests.get(self.__api_base_url + self.search_issues + '?q=' + self.q +"type:issue"+'+'+self.filter_title+"&per_page=100", headers=self.__header)
-        self.assertEqual(response.status_code,200)
-    
-    def test_search_issues_by_body(self):
-        response = requests.get(self.__api_base_url + self.search_issues + '?q=' + self.q +"type:issue"+'+'+self.filter_body+"&per_page=100", headers=self.__header)
-        self.assertEqual(response.status_code,200)
-    
-    def test_search_issues_by_comment(self):
-        response = requests.get(self.__api_base_url + self.search_issues + '?q=' + self.q +"type:issue"+'+'+self.filter_comment+"&per_page=100", headers=self.__header)
-        self.assertEqual(response.status_code,200)
+        #set up mock response for the external api
+        self.my_mock_response = mock.Mock(status_code=200)
+        self.my_mock_response.json.return_value ={
+        "total_count": 280,
+        "incomplete_results": 'false',
+        "items": [
+            {
+                "url": "https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132",
+                "repository_url": "https://api.github.com/repos/batterseapower/pinyin-toolkit",
+                "labels_url": "https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132/labels{/name}",
+                "comments_url": "https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132/comments",
+                "events_url": "https://api.github.com/repos/batterseapower/pinyin-toolkit/issues/132/events",
+                "html_url": "https://github.com/batterseapower/pinyin-toolkit/issues/132",
+                "id": 35802,
+                "node_id": "MDU6SXNzdWUzNTgwMg==",
+                "number": 132,
+                "title": "Line Number Indexes Beyond 20 Not Displayed",
+                "user": {
+                    "login": "Nick3C",
+                    "id": 90254,
+                    "node_id": "MDQ6VXNlcjkwMjU0",
+                    "avatar_url": "https://secure.gravatar.com/avatar/934442aadfe3b2f4630510de416c5718?d=https://a248.e.akamai.net/assets.github.com%2Fimages%2Fgravatars%2Fgravatar-user-420.png",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/Nick3C",
+                    "html_url": "https://github.com/Nick3C",
+                    "followers_url": "https://api.github.com/users/Nick3C/followers",
+                    "following_url": "https://api.github.com/users/Nick3C/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/Nick3C/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/Nick3C/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/Nick3C/subscriptions",
+                    "organizations_url": "https://api.github.com/users/Nick3C/orgs",
+                    "repos_url": "https://api.github.com/users/Nick3C/repos",
+                    "events_url": "https://api.github.com/users/Nick3C/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/Nick3C/received_events",
+                    "type": "User",
+                    "site_admin": 'true'
+                },
+                "labels": [
+                    {
+                    "id": 4,
+                    "node_id": "MDU6TGFiZWw0",
+                    "url": "https://api.github.com/repos/batterseapower/pinyin-toolkit/labels/bug",
+                    "name": "bug",
+                    "color": "ff0000"
+                    }
+                ],
+                "state": "open",
+                "assignee": 'null',
+                "milestone": {
+                    "url": "https://api.github.com/repos/octocat/Hello-World/milestones/1",
+                    "html_url": "https://github.com/octocat/Hello-World/milestones/v1.0",
+                    "labels_url": "https://api.github.com/repos/octocat/Hello-World/milestones/1/labels",
+                    "id": 1002604,
+                    "node_id": "MDk6TWlsZXN0b25lMTAwMjYwNA==",
+                    "number": 1,
+                    "state": "open",
+                    "title": "v1.0",
+                    "description": "Tracking milestone for version 1.0",
+                    "creator": {
+                    "login": "octocat",
+                    "id": 1,
+                    "node_id": "MDQ6VXNlcjE=",
+                    "avatar_url": "https://github.com/images/error/octocat_happy.gif",
+                    "gravatar_id": "",
+                    "url": "https://api.github.com/users/octocat",
+                    "html_url": "https://github.com/octocat",
+                    "followers_url": "https://api.github.com/users/octocat/followers",
+                    "following_url": "https://api.github.com/users/octocat/following{/other_user}",
+                    "gists_url": "https://api.github.com/users/octocat/gists{/gist_id}",
+                    "starred_url": "https://api.github.com/users/octocat/starred{/owner}{/repo}",
+                    "subscriptions_url": "https://api.github.com/users/octocat/subscriptions",
+                    "organizations_url": "https://api.github.com/users/octocat/orgs",
+                    "repos_url": "https://api.github.com/users/octocat/repos",
+                    "events_url": "https://api.github.com/users/octocat/events{/privacy}",
+                    "received_events_url": "https://api.github.com/users/octocat/received_events",
+                    "type": "User",
+                    "site_admin": 'false'
+                    },
+                    "open_issues": 4,
+                    "closed_issues": 8,
+                    "created_at": "2011-04-10T20:09:31Z",
+                    "updated_at": "2014-03-03T18:58:10Z",
+                    "closed_at": "2013-02-12T13:22:01Z",
+                    "due_on": "2012-10-09T23:39:01Z"
+                },
+                "comments": 15,
+                "created_at": "2009-07-12T20:10:41Z",
+                "updated_at": "2009-07-19T09:23:43Z",
+                "closed_at": 'null',
+                "pull_request": {
+                    "url": "https://api/github.com/repos/octocat/Hello-World/pull/1347",
+                    "html_url": "https://github.com/octocat/Hello-World/pull/1347",
+                    "diff_url": "https://github.com/octocat/Hello-World/pull/1347.diff",
+                    "patch_url": "https://api.github.com/repos/octocat/Hello-World/pulls/1347"
+                },
+                "body": "...",
+                "score": 1,
+                "locked": 'true',
+                "author_association": "COLLABORATOR"
+                }
+            ]
+        }
 
-    def test_search_issue_with_q(self):
-        r = requests.get(self.__api_base_url + self.search_issues + '?q=' + self.q, headers=self.__header) 
-        self.assertEqual(r.status_code, 200)
+        self.title = 'in:title'
+        self.body = 'in:body'
+        self.comment = 'in:comment'
+        self.search_term = 'broken'
+        self.headers= {"Authorization": "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"}
+
+    @mock.patch('github.helper.requests.get')
+    def test_get_filtered_response_by_title(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        filtered_response = get_single_filtered_response(self.title,self.search_term,self.headers)
+        self.assertEqual(filtered_response['filterBy'],'&title=in%3Atitle')
+        self.assertEqual(filtered_response['response'].status_code,200)
+    
+    @mock.patch('github.helper.requests.get')
+    def test_get_filtered_response_by_body(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        filtered_response = get_single_filtered_response(self.body,self.search_term,self.headers)
+        self.assertEqual(filtered_response['filterBy'],'&body=in%3Abody')
+        self.assertEqual(filtered_response['response'].status_code,200)
+    
+    @mock.patch('github.helper.requests.get')
+    def test_get_filtered_response_by_comment(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        filtered_response = get_single_filtered_response(self.comment,self.search_term,self.headers)
+        self.assertEqual(filtered_response['filterBy'],'&comment=in%3Acomment')
+        self.assertEqual(filtered_response['response'].status_code,200)
+    
+    @mock.patch('github.helper.requests.get')
+    def test_get_filtered_response_by_titleAndBody(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        filtered_response = get_response_by_two_filter(self.title,self.body,self.search_term,self.headers)
+        self.assertEqual(filtered_response['filterBy'],'&title=in%3Atitle&body=in%3Abody')
+        self.assertEqual(filtered_response['response'].status_code,200)
+    
+    @mock.patch('github.helper.requests.get')
+    def test_get_filtered_response_by_titleAndComment(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        filtered_response = get_response_by_two_filter(self.title,self.comment,self.search_term,self.headers)
+        self.assertEqual(filtered_response['filterBy'],'&title=in%3Atitle&comment=in%3Acomment')
+        self.assertEqual(filtered_response['response'].status_code,200)
+    
+    @mock.patch('github.helper.requests.get')
+    def test_get_filtered_response_by_bodyAndComment(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        filtered_response = get_response_by_two_filter(self.body,self.comment,self.search_term,self.headers)
+        self.assertEqual(filtered_response['filterBy'],'&body=in%3Abody&comment=in%3Acomment')
+        self.assertEqual(filtered_response['response'].status_code,200)
+    
+    @mock.patch('github.helper.requests.get')
+    def test_get_filtered_response_by_titleAndBodyAndComment(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        filtered_response = get_response_by_three_filter(self.title,self.body,self.comment,self.search_term,self.headers)
+        self.assertEqual(filtered_response['filterBy'],'&title=in%3Atitle&body=in%3Abody')
+        self.assertEqual(filtered_response['response'].status_code,200)
+    
+    @mock.patch('github.helper.requests.get')
+    def test_parse_json(self,mock_post):
+        mock_post.return_value = self.my_mock_response  
+        issuesList = parse_response(mock_post,[])
+        self.assertIsInstance(issuesList,list) 

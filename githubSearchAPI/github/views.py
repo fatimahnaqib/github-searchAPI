@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .helper import parse_response,handle_pagination, get_filtered_response,check_limit,save_to_model,get_exception
+from .helper import parse_response,handle_pagination,check_limit,save_to_model,get_exception, get_single_filtered_response,get_response_by_two_filter,get_response_by_three_filter,get_no_filtered_response
 import requests
 from .models import Issue
 
@@ -12,14 +12,49 @@ def search(request):
     length=0
     issueslist=[]
     filterBy = ''
+
     if request.GET.get('search_term'):
         search_term=request.GET['search_term']
 
         # Get filtered Response
-        filtered_response = get_filtered_response(request,search_term,headers)
-        filterBy = filtered_response['filterBy']
-        response = filtered_response['response']
-       
+        if request.GET.get('title'):
+            filtered_response = get_single_filtered_response(request.GET['title'],search_term,headers)
+            filterBy = filtered_response['filterBy']
+            response = filtered_response['response']
+        
+        if request.GET.get('body'):
+            filtered_response = get_single_filtered_response(request.GET['body'],search_term,headers)
+            filterBy = filtered_response['filterBy']
+            response = filtered_response['response']
+        
+        if request.GET.get('comment'):
+            filtered_response = get_single_filtered_response(request.GET['comment'],search_term,headers)
+            filterBy = filtered_response['filterBy']
+            response = filtered_response['response']
+        
+        if request.GET.get('title') and request.GET.get('body'):
+            filtered_response = get_response_by_two_filter(request.GET['title'],request.GET['body'],search_term,headers)
+            filterBy = filtered_response['filterBy']
+            response = filtered_response['response']
+        
+        if request.GET.get('title') and request.GET.get('comment'):
+            filtered_response = get_response_by_two_filter(request.GET['title'],request.GET['comment'],search_term,headers)
+            filterBy = filtered_response['filterBy']
+            response = filtered_response['response']
+        
+        if request.GET.get('body') and request.GET.get('comment'):
+            filtered_response = get_response_by_two_filter(request.GET['body'],request.GET['comment'],search_term,headers)
+            filterBy = filtered_response['filterBy']
+            response = filtered_response['response']
+        
+        if request.GET.get('title') and request.GET.get('body') and request.GET.get('comment'):
+            filtered_response = get_response_by_three_filter(request.GET['title'],request.GET['body'],request.GET['comment'],search_term,headers)
+            filterBy = filtered_response['filterBy']
+            response = filtered_response['response']
+                
+        if not request.GET.get('title') and not request.GET.get('body') and not request.GET.get('comment'):
+            response = get_no_filtered_response(search_term,headers)
+
         #Raise exception that is not a success
         get_exception(response)
         
@@ -39,7 +74,7 @@ def search(request):
         length=len(issueslist)
 
         #Save to model Issues
-        save_to_model(issueslist)
+        # save_to_model(issueslist)
        
     #Handle pagination
     issueslist = handle_pagination(issueslist,request,100)

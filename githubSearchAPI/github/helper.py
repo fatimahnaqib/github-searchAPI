@@ -26,48 +26,57 @@ def handle_pagination(issues,request,result_no):
    
     return issues
 
-def get_filtered_response(request,search_term,headers):
+def get_no_filtered_response(search_term,headers):
+    return requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+"&per_page=100", headers=headers)
+
+def get_single_filtered_response(filteredOption,search_term,headers):
     filtered_response = {}
 
-    if request.GET.get('title'):
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+request.GET['title']+"&per_page=100", headers=headers)
+    if filteredOption == 'in:title':
+        response = requests.get('https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+filteredOption+"&per_page=100", headers=headers)
         filterBy = "&title=in%3Atitle"
         filtered_response.update({'response':response,'filterBy':filterBy})
-
-    if request.GET.get('body'):
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+request.GET['body']+"&per_page=100", headers=headers)
+    
+    if filteredOption == 'in:body':
+        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+filteredOption+"&per_page=100", headers=headers)
         filterBy = "&body=in%3Abody"
         filtered_response.update({'response':response,'filterBy':filterBy})
-
-    if request.GET.get('comment'): 
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+request.GET['comment']+"&per_page=100", headers=headers)
+    
+    if filteredOption == 'in:comment':
+        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+filteredOption+"&per_page=100", headers=headers)
         filterBy = "&comment=in%3Acomment"
         filtered_response.update({'response':response,'filterBy':filterBy})
+    
+    return filtered_response
 
-    if request.GET.get('title') and request.GET.get('body'):
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+request.GET['title']+'+'+request.GET['body']+"&per_page=100", headers=headers)
+def get_response_by_two_filter(filterOption1,filterOption2,search_term,headers):
+    filtered_response = {}
+
+    if filterOption1 == 'in:title' and filterOption2 == 'in:body':
+        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+filterOption1+'+'+filterOption2+"&per_page=100", headers=headers)
         filterBy = "&title=in%3Atitle&body=in%3Abody"
         filtered_response.update({'response':response,'filterBy':filterBy})
-
-    if request.GET.get('title') and request.GET.get('comment'):
+    
+    if filterOption1 == 'in:title' and filterOption2 == 'in:comment':
+        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+filterOption1+'+'+filterOption2+"&per_page=100", headers=headers)
         filterBy = "&title=in%3Atitle&comment=in%3Acomment"
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+request.GET['title']+'+'+request.GET['comment']+"&per_page=100", headers=headers)
         filtered_response.update({'response':response,'filterBy':filterBy})
-
-    if request.GET.get('body') and request.GET.get('comment'):
+    
+    if filterOption1 == 'in:body' and filterOption2 == 'in:comment':
+        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+filterOption1+'+'+filterOption2+"&per_page=100", headers=headers)
         filterBy = "&body=in%3Abody&comment=in%3Acomment"
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+request.GET['body']+'+'+request.GET['comment']+"&per_page=100", headers=headers)
         filtered_response.update({'response':response,'filterBy':filterBy})
+    
+    return filtered_response
 
-    if request.GET.get('title') and request.GET.get('body') and request.GET.get('comment'):
-        filterBy = "&title=in%3Atitle&body=in%3Abody&comment=in%3Acomment"
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+request.GET['title']+'+'+request.GET['body']+'+'+request.GET['comment']+"&per_page=100", headers=headers)
+def get_response_by_three_filter(filterOption1,filterOption2,filterOption3,search_term,headers):
+    filtered_response = {}
+
+    if filterOption1 == 'in:title' and filterOption2 == 'in:body' and filterOption3 == 'in:comment':
+        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+'+'+filterOption1+'+'+filterOption2+filterOption3+"&per_page=100", headers=headers)
+        filterBy = "&title=in%3Atitle&body=in%3Abody"
         filtered_response.update({'response':response,'filterBy':filterBy})
-
-    if not request.GET.get('title') and not request.GET.get('body') and not request.GET.get('comment'):
-        response = requests.request('GET', 'https://api.github.com/search/issues?q='+search_term+"type:issue"+"&per_page=100", headers=headers)
-        filtered_response.update({'response':response,'filterBy':''})
-
+    
     return filtered_response
 
 def check_limit(response):
