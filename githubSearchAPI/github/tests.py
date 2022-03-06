@@ -169,3 +169,4 @@ class TestSearchIssuesApi(TestCase):
         mock_post.return_value = self.my_mock_response  
         issuesList = parse_response(mock_post,[])
         self.assertIsInstance(issuesList,list)
+        
