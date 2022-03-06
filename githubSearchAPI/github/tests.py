@@ -1,5 +1,5 @@
 from django.test import TestCase
-from .helper import get_single_filtered_response, get_response_by_two_filter, get_response_by_three_filter, parse_response,get_exception
+from .helper import get_single_filtered_response, get_response_by_two_filter, get_response_by_three_filter, parse_response
 import mock
 
 
@@ -168,4 +168,4 @@ class TestSearchIssuesApi(TestCase):
     def test_parse_json(self,mock_post):
         mock_post.return_value = self.my_mock_response  
         issuesList = parse_response(mock_post,[])
-        self.assertIsInstance(issuesList,list) 
+        self.assertIsInstance(issuesList,list)
