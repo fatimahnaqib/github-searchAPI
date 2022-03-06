@@ -74,7 +74,7 @@ def search(request):
         length=len(issueslist)
 
         #Save to model Issues
-        # save_to_model(issueslist)
+        save_to_model(issueslist)
        
     #Handle pagination
     issueslist = handle_pagination(issueslist,request,100)
